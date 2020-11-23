@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
-const { constants } = require('buffer');
 const read_cfg = require('./read_cfg')
 
 const client = new Discord.Client();
@@ -15,7 +14,7 @@ client.on('message', message => {
     if (!message.content.startsWith(read_cfg.getPrefix()) || message.author.bot) return;
     var command = message.content.substring(1)
 
-    console.log('[RECIEVED]' + command)
+    console.log('[RECIEVED] ' + command)
 
     var args = command.split(/ +/)
 
@@ -26,7 +25,18 @@ client.on('message', message => {
     if((/pokemon [a-zA-Z0-9 ]+/).test(command)){
         fetch('https://pokeapi.co/api/v2/pokemon/' + args[1])
             .then(response => response.json())
-            .then(json => message.channel.send("Here is " + json.name, { files: [json.sprites["front_default"]] }));
+            .then(json => message.channel.send("Aqui está o " + json.name, { files: [json.sprites["front_default"]] }));
+    }
+
+    if(command == 'teams'){
+        var voiceChannel = message.member.voice.channel
+        if (!voiceChannel)  message.channel.send('Não estás num canal de voice...')
+        else{
+            message.channel.send('Members:')
+            voiceChannel.members.forEach((k,v) =>{
+                message.channel.send('> ' + k.displayName)
+            })
+        }   
     }
 
 });
