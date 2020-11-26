@@ -13,7 +13,7 @@ client.login(read_cfg.getToken())
 client.on('message', message => {
     if (!message.content.startsWith(read_cfg.getPrefix()) || message.author.bot) return;
 
-    console.log('[RECIEVED] ' + message.content)
+    console.log('[RECEIVED] ' + message.content)
 
     var command = message.content.substring(1)
 
