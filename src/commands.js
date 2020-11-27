@@ -1,7 +1,8 @@
 const fetch = require('node-fetch');
 let LeagueAPI = require('leagueapiwrapper')
 const read_cfg = require('./read_cfg')
-const embededs = require('./embededs.js')
+const embededs = require('./embededs.js');
+const { Console } = require('console');
 
 LeagueAPI = new LeagueAPI(read_cfg.getLeagueAPI(), Region.EUW)
 
@@ -70,4 +71,46 @@ exports.ingame = (message) => {
         })
         .then(games => message.channel.send(args[1] + ' is in game'))
         .catch(err => message.channel.send(args[1] + ' is not in game'))
+}
+
+exports.match_history = (message) => {
+    var command = message.content.substring(1)
+
+    var args = command.split(/ +/)
+     
+    // Gets matches for Account
+    LeagueAPI.initialize().then( () => { return LeagueAPI.getSummonerByName(args[1]) }) 
+        .then((accountInfo) => { return LeagueAPI.getMatchList(accountInfo) })
+        .then(games => {
+
+            // Gets last 5 games match details
+            var fivegames = games.matches.slice(0,5)
+            Promise.all(fivegames.map(element =>{
+                return LeagueAPI.getMatch(element.gameId)
+            }))
+            .then(gamesContent => {
+                var gamesParticipantId = []
+
+
+                // Check the participantId for last 5 matches
+                for(var i = 0; i < gamesContent.length; i++){
+                    var identities = gamesContent[i].participantIdentities
+                    for (var j = 0; j < identities.length ; j++){
+                        if (identities[j].player.summonerName.toUpperCase() == args[1].toUpperCase())
+                            gamesParticipantId.push(j)
+                    }
+                    
+                }
+
+                // Use participantID to get personal stats and build embed with them
+                for(var k = 0; k < gamesParticipantId.length; k++){
+                    var game = gamesContent[k].participants[gamesParticipantId[k]]
+                    message.channel.send(embededs.matchHistoryEmbeded(game.championObject.id,game.stats))
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        })
+        .catch(err => console.log(err))
 }

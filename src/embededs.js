@@ -16,3 +16,18 @@ exports.teamEmbeded = (members,color,teamname) => {
 
     return exampleEmbed;
 }
+
+exports.matchHistoryEmbeded = (champion, stats) => {
+    var color
+    if (stats.win) color = '#00AA00'
+    else color = '#AA0000'
+    var matchHistoryEmbed = new Discord.MessageEmbed()
+        .setColor(color)
+        .setThumbnail('https://cdn.mobalytics.gg/stable/champion/'+champion+'.png')
+        .setTitle(champion)
+        .addField('🗡️', stats.kills, true)
+        .addField('💀', stats.deaths, true)
+        .addField('👋', stats.assists, true)
+
+    return matchHistoryEmbed;
+}

@@ -32,6 +32,9 @@ client.on('message', message => {
         case 'ingame':
             commands.ingame(message)
             break;
+        case 'matches':
+            commands.match_history(message)
+            break;
     
         default:
             break;
