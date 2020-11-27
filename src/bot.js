@@ -29,6 +29,9 @@ client.on('message', message => {
         case 'teams':
             commands.teams(message)
             break;
+        case 'ingame':
+            commands.ingame(message)
+            break;
     
         default:
             break;

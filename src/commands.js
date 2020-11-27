@@ -1,6 +1,9 @@
 const fetch = require('node-fetch');
 let LeagueAPI = require('leagueapiwrapper')
+const read_cfg = require('./read_cfg')
 const embededs = require('./embededs.js')
+
+LeagueAPI = new LeagueAPI(read_cfg.getLeagueAPI(), Region.EUW)
 
 exports.pokemon = (message) => {
     var command = message.content.substring(1)
@@ -55,6 +58,16 @@ exports.teams = (message) => {
     }
 }
 
-exports.ingame = () => {
-    //Fill with league api calls
+exports.ingame = (message) => {
+    var command = message.content.substring(1)
+
+    var args = command.split(/ +/)
+
+    LeagueAPI.getSummonerByName(args[1])
+        .then(accountInfo => {
+            // do something with accountInfo
+            return LeagueAPI.getActiveGames(accountInfo)
+        })
+        .then(games => message.channel.send(args[1] + ' is in game'))
+        .catch(err => message.channel.send(args[1] + ' is not in game'))
 }
